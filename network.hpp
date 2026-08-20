@@ -31,14 +31,6 @@ SOFTWARE.
 #include "utils/memory_utils.hpp"
 #include <cstring>
 
-// types enum
-enum class NetworkParamType {
-    Int,
-    Int64,
-    String,
-    Byte
-};
-
 namespace structs {
 
     struct BufferStruct {
