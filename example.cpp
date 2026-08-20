@@ -31,18 +31,18 @@ SOFTWARE.
 
 namespace hook::utils {
 
-    __int64 GetViaSessionKey(int key) {
+    __int64 GetLocalComponentViaKey(int key) {
         typedef __int64(*t__int64_0)();
         typedef __int64(__fastcall* t__int64_2)(__int64, int);
-        static t__int64_0 oGetSession = nullptr; // 48 8D 0D ? ? ? ? E9 ? ? ? ? ? ? ? ? 8B 05 ? ? ? ? C3
-        static t__int64_2 oDecryptViaKey = nullptr; // 4C 8B C9 33 C9 49 8B 81 ? ? ? ? 49 2B 81 ? ? ? ? ? ? ? 74 ? 4D 8B 81 ? ? ? ? 90
-        if (!oGetSession) oGetSession = (t__int64_0)(sdk::find_pattern(nullptr, "48 8D 0D ? ? ? ? E9 ? ? ? ? ? ? ? ? 8B 05 ? ? ? ? C3"));
-        if (!oDecryptViaKey) oDecryptViaKey = (t__int64_2)(sdk::find_pattern(nullptr, "4C 8B C9 33 C9 49 8B 81 ? ? ? ? 49 2B 81 ? ? ? ? ? ? ? 74 ? 4D 8B 81 ? ? ? ? 90"));
-        if (!oGetSession || !oDecryptViaKey) return 0;
+        static t__int64_0 oGetLocalPlayer = nullptr; // 48 8D 0D ? ? ? ? E9 ? ? ? ? ? ? ? ? 8B 05 ? ? ? ? C3
+        static t__int64_2 oGetComponentByID = nullptr; // 4C 8B C9 33 C9 49 8B 81 ? ? ? ? 49 2B 81 ? ? ? ? ? ? ? 74 ? 4D 8B 81 ? ? ? ? 90
+        if (!oGetLocalPlayer) oGetLocalPlayer = (t__int64_0)(sdk::find_pattern(nullptr, "48 8D 0D ? ? ? ? E9 ? ? ? ? ? ? ? ? 8B 05 ? ? ? ? C3"));
+        if (!oGetComponentByID) oGetComponentByID = (t__int64_2)(sdk::find_pattern(nullptr, "4C 8B C9 33 C9 49 8B 81 ? ? ? ? 49 2B 81 ? ? ? ? ? ? ? 74 ? 4D 8B 81 ? ? ? ? 90"));
+        if (!oGetLocalPlayer || !oGetComponentByID) return 0;
 
-        __int64 session = oGetSession();
-        if (!session) return 0; // in loading screen
-        __int64 result = oDecryptViaKey(session, key);
+        __int64 entity = oGetLocalPlayer();
+        if (!entity) return 0; // in loading screen
+        __int64 result = oGetComponentByID(entity, key);
         return result;
     }
 
@@ -50,19 +50,19 @@ namespace hook::utils {
 
 // examples
 void RequestSpecificWorld(int64_t world_id) {
-    network::call(192, 200, "RequestSpecificWorld", hook::utils::GetViaSessionKey(376), world_id);
+    network::call(192, 200, "RequestSpecificWorld", hook::utils::GetLocalComponentViaKey(376), world_id);
 }
 
 void JoinPlayer(const char* player_name) {
-    network::call(192, 200, "JoinPlayer", hook::utils::GetViaSessionKey(376), player_name);
+    network::call(192, 200, "JoinPlayer", hook::utils::GetLocalComponentViaKey(376), player_name);
 }
 
 void InvitePlayer(const char* player_name) {
-    network::call(192, 200, "InvitePlayer", hook::utils::GetViaSessionKey(376), player_name, 0);
+    network::call(192, 200, "InvitePlayer", hook::utils::GetLocalComponentViaKey(376), player_name, 0);
 }
 
 void EquipPetAppearance(const char* pet_path) {
-    network::call(192, -1, "EquipPetAppearance", hook::utils::GetViaSessionKey(219), pet_path);
+    network::call(192, -1, "EquipPetAppearance", hook::utils::GetLocalComponentViaKey(219), pet_path);
 }
 
 void example() {
