@@ -13,9 +13,8 @@ A small header-only library for calling Trove's internal network dispatcher from
   - `int64_t` (int64)
   - `float`
   - `double`
-  - `Vec3`
+  - `Vec3` (x, y, z)
   - `const char*` (strings)
-  - `structs::BufferStruct`
 
 ## Requirements
 
