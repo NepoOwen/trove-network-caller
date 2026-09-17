@@ -4,13 +4,16 @@ A small header-only library for calling Trove's internal network dispatcher from
 
 ## Features
 
-- Single header (`network.hpp`) — just include it and call `network::call`.
-- Variadic template dispatcher — pass any number of parameters of supported types.
+- Single header (`network.hpp`) — just include it and use `network::setup` / `network::add_*` / `network::call`.
 - Automatic pattern scanning of the required game functions at first use.
 - Supported parameter types:
-  - `bool`
-  - `int32_t`
-  - `int64_t`
+  - `uint8_t` (byte)
+  - `int32_t` (int)
+  - `uint32_t` (uint)
+  - `int64_t` (int64)
+  - `float`
+  - `double`
+  - `Vec3`
   - `const char*` (strings)
   - `structs::BufferStruct`
 
@@ -18,7 +21,6 @@ A small header-only library for calling Trove's internal network dispatcher from
 
 - Windows x64
 - MSVC (Visual Studio)
-- C++20 or newer (uses `std::format` and `inline` variables)
 - The code must run inside the Trove process (e.g., from an injected DLL)
 
 ## Build
@@ -27,7 +29,7 @@ There is no project file — this is meant to be dropped into your existing DLL 
 
 1. Add this folder to your include paths.
 2. `#include "network.hpp"` where needed.
-3. Add `utils/memory_utils.cpp` to your project so it compiles and links.
+3. Make sure the underlying pattern-scanning (`sdk::find_pattern`) is available and linked.
 
 The rest of the library is header-only.
 
@@ -36,23 +38,37 @@ The rest of the library is header-only.
 ```cpp
 #include "network.hpp"
 
-// network::call(dispatcher_offset, extra_offset, event_name, session, args...)
-network::call(192, 200, "JoinPlayer", session, "player_name");
-network::call(192, -1, "EquipPetAppearance", session, "collections/pet/mug_rootbeer");
-network::call(192, 200, "RequestSpecificWorld", session, (int64_t)7164068446503133809LL);
+void EquipPetAppearance(const char* pet_path) {
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_string(v5, pet_path);
+    network::call("EquipPetAppearance", hook::utils::GetViaSessionKey(219), v5);
+}
 ```
 
-- `dispatcher_offset` — byte offset into the dispatcher vtable for the call function.
-- `extra_offset` — byte offset into the vtable for the optional "extra" function; pass `-1` to skip it.
-- `event_name` — the network event string the game expects.
-- `session` — the session object obtained from the game (see `example.cpp`).
-- `args...` — the event parameters, in order. Each is appended via the matching parameter type.
+- `network::setup(buffer)` — zero-initializes the buffer and calls the game's network setup (pattern-scanned).
+- `network::add_* (buffer, value)` — appends a typed parameter (`add_byte`, `add_int`, `add_uint`, `add_int64`, `add_float`, `add_double`, `add_vec3`, `add_string`).
+- `network::call(event_name, session, buffer)` — resolves the dispatcher from the session vtable (offset `192`), optionally runs the "extra" function (offset `200`) when `extra_offset != -1`, then invokes the network call with `{ name, flags=3, zero=0 }` and finally cleans up the buffer.
 
-`network::call` initializes itself on the first call and silently returns if initialization fails or `session` is null.
+`network::setup`/`network::call` initialize themselves (pattern scanning) on first use and silently return if initialization fails or `session` is null.
 
 ## Example
 
-`example.cpp` shows a complete session helper (`GetViaSessionKey`) plus working examples for joining a world by world id, joining/inviting a player, and equipping a pet appearance.
+The reference send path for `RequestSpecificWorld` with a single `int64` parameter:
+
+```cpp
+__int64 a1 = hook::utils::GetViaSessionKey(376);
+if (!a1) return;
+
+uint64_t v5[14];
+memset(v5, 0, 0x60u);
+network::setup(v5);
+network::add_int64(v5, 7164068446503133809LL);
+network::call("RequestSpecificWorld", a1, v5);
+```
+
+This mirrors the game's own native send path: resolve `network_setup`/`network_cleanup`/`network_add_param_*` via patterns, build the buffer, resolve the dispatcher from vtable offsets `192` (call) and `200` (extra), invoke `network_extra(a1)` then `network_call(a1, &v4, v5)` with `{ name, flags=3, zero=0 }`, then `network_cleanup(v5)`.
 
 ## Disclaimer
 
