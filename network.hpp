@@ -33,7 +33,7 @@ SOFTWARE.
 #include <cstdio>
 #include <cstring>
 
-// structs, remove is unnecessary includes
+// structs, remove if unnecessary includes
 struct Vec3 {
     float x, y, z;
 };
