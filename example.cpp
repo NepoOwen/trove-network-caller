@@ -50,19 +50,45 @@ namespace hook::utils {
 
 // examples
 void RequestSpecificWorld(int64_t world_id) {
-    network::call(192, 200, "RequestSpecificWorld", hook::utils::GetLocalComponentViaKey(376), world_id);
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_int64(v5, world_id);
+    network::call("RequestSpecificWorld", hook::utils::GetViaSessionKey(376), v5);
 }
 
 void JoinPlayer(const char* player_name) {
-    network::call(192, 200, "JoinPlayer", hook::utils::GetLocalComponentViaKey(376), player_name);
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_string(v5, player_name);
+    network::call("JoinPlayer", hook::utils::GetViaSessionKey(376), v5);
 }
 
 void InvitePlayer(const char* player_name) {
-    network::call(192, 200, "InvitePlayer", hook::utils::GetLocalComponentViaKey(376), player_name, 0);
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_string(v5, player_name);
+    network::add_int(v5, 0);
+    network::call("InvitePlayer", hook::utils::GetViaSessionKey(376), v5);
 }
 
 void EquipPetAppearance(const char* pet_path) {
-    network::call(192, -1, "EquipPetAppearance", hook::utils::GetLocalComponentViaKey(219), pet_path);
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_string(v5, pet_path);
+    network::call("EquipPetAppearance", hook::utils::GetViaSessionKey(219), v5);
+}
+
+void SetClass(int32_t class_id) {
+    uint64_t v5[14];
+    memset(v5, 0, 0x60u);
+    network::setup(v5);
+    network::add_int(v5, class_id);
+    network::add_byte(v5, 0);
+    network::call("SetClass", hook::utils::GetViaSessionKey(10), v5);
 }
 
 void example() {
@@ -70,4 +96,5 @@ void example() {
     JoinPlayer("player_name");
     InvitePlayer("player_name");
     EquipPetAppearance("collections/pet/mug_rootbeer");
+    SetClass(17); // solarion
 }
