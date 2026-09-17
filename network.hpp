@@ -67,15 +67,15 @@ namespace network {
         typedef void(__fastcall* add_param_uint_t)(uint64_t* a1, uint32_t a2);
         typedef void(__fastcall* add_param_double_t)(uint64_t* a1, double a2);
 
-        static setup_t            setup = nullptr;
-        static cleanup_t          cleanup = nullptr;
-        static add_param_byte_t   add_param_byte = nullptr;
-        static add_param_int_t    add_param_int = nullptr;
-        static add_param_int64_t  add_param_int64 = nullptr;
+        static setup_t setup = nullptr;
+        static cleanup_t cleanup = nullptr;
+        static add_param_byte_t add_param_byte = nullptr;
+        static add_param_int_t add_param_int = nullptr;
+        static add_param_int64_t add_param_int64 = nullptr;
         static add_param_string_t add_param_string = nullptr;
-        static add_param_vec3_t   add_param_vec3 = nullptr;
-        static add_param_float_t  add_param_float = nullptr;
-        static add_param_uint_t   add_param_uint = nullptr;
+        static add_param_vec3_t add_param_vec3 = nullptr;
+        static add_param_float_t add_param_float = nullptr;
+        static add_param_uint_t add_param_uint = nullptr;
         static add_param_double_t add_param_double = nullptr;
 
         static bool initialize() {
@@ -119,13 +119,13 @@ namespace network {
         network::detail::setup(v5);
     }
 
-    inline void add_byte(uint64_t* buffer, uint8_t value)   { if (detail::add_param_byte)   detail::add_param_byte(buffer, value); }
-    inline void add_int(uint64_t* buffer, int32_t value)    { if (detail::add_param_int)    detail::add_param_int(buffer, value); }
-    inline void add_uint(uint64_t* buffer, uint32_t value)  { if (detail::add_param_uint)   detail::add_param_uint(buffer, value); }
-    inline void add_int64(uint64_t* buffer, int64_t value)  { if (detail::add_param_int64)  detail::add_param_int64(buffer, value); }
-    inline void add_float(uint64_t* buffer, float value)    { if (detail::add_param_float)  detail::add_param_float(buffer, value); }
-    inline void add_double(uint64_t* buffer, double value)  { if (detail::add_param_double) detail::add_param_double(buffer, value); }
-    inline void add_vec3(uint64_t* buffer, Vec3 value)      { if (detail::add_param_vec3)   detail::add_param_vec3(buffer, value); }
+    inline void add_byte(uint64_t* buffer, uint8_t value) { if (detail::add_param_byte) detail::add_param_byte(buffer, value); }
+    inline void add_int(uint64_t* buffer, int32_t value) { if (detail::add_param_int) detail::add_param_int(buffer, value); }
+    inline void add_uint(uint64_t* buffer, uint32_t value) { if (detail::add_param_uint) detail::add_param_uint(buffer, value); }
+    inline void add_int64(uint64_t* buffer, int64_t value) { if (detail::add_param_int64) detail::add_param_int64(buffer, value); }
+    inline void add_float(uint64_t* buffer, float value) { if (detail::add_param_float) detail::add_param_float(buffer, value); }
+    inline void add_double(uint64_t* buffer, double value) { if (detail::add_param_double) detail::add_param_double(buffer, value); }
+    inline void add_vec3(uint64_t* buffer, Vec3 value) { if (detail::add_param_vec3) detail::add_param_vec3(buffer, value); }
 
     inline void add_string(uint64_t* buffer, const char* value) {
         if (!detail::add_param_string) return;
